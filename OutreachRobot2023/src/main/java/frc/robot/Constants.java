@@ -57,68 +57,7 @@ public class Constants {
 
     public static double kLooperDt = 0.01;
 
-    // CONTROL LOOP GAINS
 
-    // PID gains for hood position loop
-    // Units: error is degrees of hood rotation. Max output is +/- 1.0.
-    // Loop runs at 100Hz
-    public static double kHoodKp = 0.1;
-    public static double kHoodKi = 0.0;
-    public static double kHoodKd = 0.0;
-    public static double kHoodDeadband = 0.3; // degrees
-
-    // PID gains for drive velocity loop (LOW GEAR)
-    // Units: error is 4096 counts/rev. Max output is +/- 1023 units.
-    public static double kDriveVelocityKp = 1.0;
-    public static double kDriveVelocityKi = 0.0;
-    public static double kDriveVelocityKd = 6.0;
-    public static double kDriveVelocityKf = 0.5;
-    public static int kDriveVelocityIZone = 0;
-    public static double kDriveVelocityRampRate = 0.0;
-    public static int kDriveVelocityAllowableError = 0;
-
-    // PID gains for drive base lock loop
-    // Units: error is 4096 counts/rev. Max output is +/- 1023 units.
-    public static double kDriveBaseLockKp = 0.5;
-    public static double kDriveBaseLockKi = 0;
-    public static double kDriveBaseLockKd = 0;
-    public static double kDriveBaseLockKf = 0;
-    public static int kDriveBaseLockIZone = 0;
-    public static double kDriveBaseLockRampRate = 0;
-    public static int kDriveBaseLockAllowableError = 10;
-
-    // PID gains for constant heading velocity control
-    // Units: Error is degrees. Output is inches/second difference to
-    // left/right.
-    public static double kDriveHeadingVelocityKp = 4.0; // 6.0;
-    public static double kDriveHeadingVelocityKi = 0.0;
-    public static double kDriveHeadingVelocityKd = 50.0;
-
-    // Path following constants
-    public static double kPathFollowingLookahead = 24.0; // inches
-    public static double kPathFollowingMaxVel = 120.0; // inches/sec
-    public static double kPathFollowingMaxAccel = 80.0; // inches/sec^2
-
-    // PID gains for turret position loop
-    // Units: error is 4096 counts/rev. Max output is +/- 1023 units.
-    public static double kTurretKp = 0.7;
-    public static double kTurretKi = 0.0;
-    public static double kTurretKd = 30.0;
-    public static double kTurretKf = 0;
-    public static int kTurretIZone = (int) (1023.0 / kTurretKp);
-    public static double kTurretRampRate = 0;
-    public static int kTurretAllowableError = 100;
-
-    // PID gains for intake current loop
-    // Units: error is mA. Max output is +/- 1023 units.
-    public static double kIntakeTargetCurrent = 20.0; // Amps
-    public static double kIntakeKp = 0.04;
-    public static double kIntakeKi = 0.0;
-    public static double kIntakeKd = 0.0;
-    public static double kIntakeKf = 0.0175;
-    public static int kIntakeIZone = (int) (1023.0 / kIntakeKp);
-    public static double kIntakeRampRate = 0;
-    public static int kIntakeAllowableError = 0;
 
     // PID gains for flywheel velocity loop
     // Units: error is (4096 counts/rev)/100ms. Max output is +/- 1023 units.

@@ -1,8 +1,12 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
 
 /**
  * The Turret subsystem controls the direction the ball is fired. On the Turret
@@ -21,70 +25,70 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @see Superstructure
  */
 public class Turret extends Subsystem {
-    private CANTalon talon_;
+    private final WPI_TalonFX m_motorLeader;
 
     Turret() {
         // The turret has one Talon.
-        talon_ = new CANTalon(Constants.kTurretTalonId);
-        talon_.enableBrakeMode(true);
-        talon_.enableLimitSwitch(true, true);
-        talon_.ConfigFwdLimitSwitchNormallyOpen(true);
-        talon_.ConfigRevLimitSwitchNormallyOpen(true);
-        talon_.setStatusFrameRateMs(CANTalon.StatusFrameRate.Feedback, 10);
-        talon_.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
-        if (talon_.isSensorPresent(
-                CANTalon.FeedbackDevice.CtreMagEncoder_Relative) != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
+        m_motorLeader = new WPI_TalonFX(Constants.kTurretTalonId);
+        m_motorLeader.enableBrakeMode(true);
+        m_motorLeader.enableLimitSwitch(true, true);
+        m_motorLeader.ConfigFwdLimitSwitchNormallyOpen(true);
+        m_motorLeader.ConfigRevLimitSwitchNormallyOpen(true);
+        m_motorLeader.setStatusFrameRateMs(CANTalon.StatusFrameRate.Feedback, 10);
+        m_motorLeader.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
+        if (m_motorLeader.isSensorPresent(
+                CANTalon.FeedbackDevice.CtreMagEncoder_Relative) != Talon.FeedbackDeviceStatus.FeedbackStatusPresent) {
             DriverStation.reportError("Could not detect turret encoder!", false);
         }
 
-        talon_.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        m_motorLeader.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
 
-        talon_.setPID(Constants.kTurretKp, Constants.kTurretKi, Constants.kTurretKd, Constants.kTurretKf,
+        m_motorLeader.setPID(Constants.kTurretKp, Constants.kTurretKi, Constants.kTurretKd, Constants.kTurretKf,
                 Constants.kTurretIZone, Constants.kTurretRampRate, 0);
-        talon_.setProfile(0);
-        talon_.reverseSensor(true);
-        talon_.reverseOutput(false);
+        m_motorLeader.setProfile(0);
+        m_motorLeader.reverseSensor(true);
+        m_motorLeader.reverseOutput(false);
 
         // We use soft limits to make sure the turret doesn't try to spin too
         // far.
-        talon_.enableForwardSoftLimit(true);
-        talon_.enableReverseSoftLimit(true);
-        talon_.setForwardSoftLimit(Constants.kSoftMaxTurretAngle / (360.0 * Constants.kTurretRotationsPerTick));
-        talon_.setReverseSoftLimit(Constants.kSoftMinTurretAngle / (360.0 * Constants.kTurretRotationsPerTick));
+        m_motorLeader.enableForwardSoftLimit(true);
+        m_motorLeader.enableReverseSoftLimit(true);
+        m_motorLeader.setForwardSoftLimit(Constants.kSoftMaxTurretAngle / (360.0 * Constants.kTurretRotationsPerTick));
+        m_motorLeader.setReverseSoftLimit(Constants.kSoftMinTurretAngle / (360.0 * Constants.kTurretRotationsPerTick));
     }
 
     // Set the desired angle of the turret (and put it into position control
     // mode if it isn't already).
     synchronized void setDesiredAngle(Rotation2d angle) {
-        talon_.changeControlMode(CANTalon.TalonControlMode.Position);
-        talon_.set(angle.getRadians() / (2 * Math.PI * Constants.kTurretRotationsPerTick));
+        m_motorLeader.changeControlMode(CANTalon.TalonControlMode.Position);
+        m_motorLeader.set(angle.getRadians() / (2 * Math.PI * Constants.kTurretRotationsPerTick));
     }
 
     // Manually move the turret (and put it into vbus mode if it isn't already).
     synchronized void setOpenLoop(double speed) {
-        talon_.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-        talon_.set(speed);
+        m_motorLeader.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        m_motorLeader.set(speed);
     }
 
     // Tell the Talon it is at a given position.
     synchronized void reset(Rotation2d actual_rotation) {
-        talon_.setPosition(actual_rotation.getRadians() / (2 * Math.PI * Constants.kTurretRotationsPerTick));
+        m_motorLeader.setPosition(actual_rotation.getRadians() / (2 * Math.PI * Constants.kTurretRotationsPerTick));
     }
 
     public synchronized Rotation2d getAngle() {
-        return Rotation2d.fromRadians(Constants.kTurretRotationsPerTick * talon_.getPosition() * 2 * Math.PI);
+        return Rotation2d.fromRadians(Constants.kTurretRotationsPerTick * m_motorLeader.getPosition() * 2 * Math.PI);
     }
 
     public synchronized boolean getForwardLimitSwitch() {
-        return talon_.isFwdLimitSwitchClosed();
+        return m_motorLeader.isFwdLimitSwitchClosed();
     }
 
     public synchronized boolean getReverseLimitSwitch() {
-        return talon_.isRevLimitSwitchClosed();
+        return m_motorLeader.isRevLimitSwitchClosed();
     }
 
     public synchronized double getSetpoint() {
-        return talon_.getSetpoint() * Constants.kTurretRotationsPerTick * 360.0;
+        return m_motorLeader.getSetpoint() * Constants.kTurretRotationsPerTick * 360.0;
     }
 
     private synchronized double getError() {
@@ -93,7 +97,7 @@ public class Turret extends Subsystem {
 
     // We are "OnTarget" if we are in position mode and close to the setpoint.
     public synchronized boolean isOnTarget() {
-        return (talon_.getControlMode() == CANTalon.TalonControlMode.Position
+        return (m_motorLeader.getControlMode() == CANTalon.TalonControlMode.Position
                 && Math.abs(getError()) < Constants.kTurretOnTargetTolerance);
     }
 
@@ -102,7 +106,7 @@ public class Turret extends Subsystem {
      *         state.
      */
     public synchronized boolean isSafe() {
-        return (talon_.getControlMode() == CANTalon.TalonControlMode.Position && talon_.getSetpoint() == 0 && Math.abs(
+        return (m_motorLeader.getControlMode() == CANTalon.TalonControlMode.Position && m_motorLeader.getSetpoint() == 0 && Math.abs(
                 getAngle().getDegrees() * Constants.kTurretRotationsPerTick * 360.0) < Constants.kTurretSafeTolerance);
     }
 

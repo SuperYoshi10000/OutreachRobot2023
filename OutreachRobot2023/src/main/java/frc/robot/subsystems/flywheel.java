@@ -1,3 +1,8 @@
+package frc.robot.subsystems;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import frc.robot.Constants;
 
 /**
  * The flywheel has several parameters: the RPM speed, the setpoint, and the RPM
@@ -17,42 +22,42 @@
  * @see Superstructure
  */
 public class Flywheel extends Subsystem {
-    CANTalon master_talon_;
-    CANTalon slave_talon_;
+    WPI_TalonFX m_motorLeader;
+    WPI_TalonFX m_motorFollower;
 
     Flywheel() {
-        master_talon_ = new CANTalon(Constants.kShooterMasterId);
-        slave_talon_ = new CANTalon(Constants.kShooterSlaveId);
+        m_motorLeader = new WPI_TalonFX(Constants.kShooterLeaderId);
+        m_motorFollower = new WPI_TalonFX(Constants.kShooterFolowerId);
 
-        master_talon_.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
-        if (master_talon_.isSensorPresent(
+        m_motorLeader.setFeedbackDevice(WPI_TalonFX.FeedbackDevice.CtreMagEncoder_Relative);
+        if (m_motorLeader.isSensorPresent(
                 CANTalon.FeedbackDevice.CtreMagEncoder_Relative) != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
             DriverStation.reportError("Could not detect shooter encoder!", false);
         }
 
-        master_talon_.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-        slave_talon_.changeControlMode(CANTalon.TalonControlMode.Follower);
-        slave_talon_.set(Constants.kShooterMasterId);
+        m_motorLeader.changeControlMode(WPI_TalonFX.TalonControlMode.PercentVbus);
+        m_motorFollower.changeControlMode(WPI_TalonFX.TalonControlMode.Follower);
+        m_motorFollower.set(Constants.kShooterMasterId);
 
-        master_talon_.setPID(Constants.kFlywheelKp, Constants.kFlywheelKi, Constants.kFlywheelKd, Constants.kFlywheelKf,
+        m_motorLeader.setPID(Constants.kFlywheelKp, Constants.kFlywheelKi, Constants.kFlywheelKd, Constants.kFlywheelKf,
                 Constants.kFlywheelIZone, Constants.kFlywheelRampRate, 0);
-        master_talon_.setProfile(0);
-        master_talon_.reverseSensor(false);
-        master_talon_.reverseOutput(false);
-        slave_talon_.reverseOutput(true);
+        m_motorLeader.setProfile(0);
+        m_motorLeader.reverseSensor(false);
+        m_motorLeader.reverseOutput(false);
+        m_motorFollower.reverseOutput(true);
 
-        master_talon_.setVoltageRampRate(36.0);
-        slave_talon_.setVoltageRampRate(36.0);
+        m_motorLeader.setVoltageRampRate(36.0);
+        m_motorFollower.setVoltageRampRate(36.0);
 
-        master_talon_.enableBrakeMode(false);
-        slave_talon_.enableBrakeMode(false);
+        m_motorLeader.enableBrakeMode(false);
+        m_motorFollower.enableBrakeMode(false);
 
-        master_talon_.clearStickyFaults();
-        slave_talon_.clearStickyFaults();
+        m_motorLeader.clearStickyFaults();
+        m_motorFollower.clearStickyFaults();
     }
 
     public synchronized double getRpm() {
-        return master_talon_.getSpeed();
+        return m_motorLeader.getSpeed();
     }
 
     /**
@@ -63,17 +68,17 @@ public class Flywheel extends Subsystem {
      *            flywheel RPM
      */
     synchronized void setRpm(double rpm) {
-        master_talon_.changeControlMode(CANTalon.TalonControlMode.Speed);
-        master_talon_.set(rpm);
+        m_motorLeader.changeControlMode(CANTalon.TalonControlMode.Speed);
+        m_motorLeader.set(rpm);
     }
 
     synchronized void setOpenLoop(double speed) {
-        master_talon_.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-        master_talon_.set(speed);
+        m_motorLeader.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        m_motorLeader.set(speed);
     }
 
     public synchronized double getSetpoint() {
-        return master_talon_.getSetpoint();
+        return m_motorLeader.getSetpoint();
     }
 
     /**
@@ -81,7 +86,7 @@ public class Flywheel extends Subsystem {
      *         point.
      */
     public synchronized boolean isOnTarget() {
-        return (master_talon_.getControlMode() == CANTalon.TalonControlMode.Speed
+        return (m_motorLeader.getControlMode() == CANTalon.TalonControlMode.Speed
                 && Math.abs(getRpm() - getSetpoint()) < Constants.kFlywheelOnTargetTolerance);
     }
 
@@ -93,10 +98,10 @@ public class Flywheel extends Subsystem {
     @Override
     public void outputToSmartDashboard() {
         SmartDashboard.putNumber("flywheel_rpm", getRpm());
-        SmartDashboard.putNumber("flywheel_setpoint", master_talon_.getSetpoint());
+        SmartDashboard.putNumber("flywheel_setpoint", m_motorLeader.getSetpoint());
         SmartDashboard.putBoolean("flywheel_on_target", isOnTarget());
-        SmartDashboard.putNumber("flywheel_master_current", master_talon_.getOutputCurrent());
-        SmartDashboard.putNumber("flywheel_slave_current", slave_talon_.getOutputCurrent());
+        SmartDashboard.putNumber("flywheel_master_current", m_motorLeader.getOutputCurrent());
+        SmartDashboard.putNumber("flywheel_slave_current", m_motorFollower.getOutputCurrent());
     }
 
     @Override
