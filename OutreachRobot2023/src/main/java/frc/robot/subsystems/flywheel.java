@@ -1,9 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
-import frc.robot.Constants;
-
 /**
  * The flywheel has several parameters: the RPM speed, the setpoint, and the RPM
  * tolerance. When told to, the flywheel will try to spin up to the setpoint
@@ -22,21 +18,21 @@ import frc.robot.Constants;
  * @see Superstructure
  */
 public class Flywheel extends Subsystem {
-    WPI_TalonFX m_motorLeader;
-    WPI_TalonFX m_motorFollower;
+    CANTalon m_motorLeader;
+    CANTalon m_motorFollower;
 
     Flywheel() {
-        m_motorLeader = new WPI_TalonFX(Constants.kShooterLeaderId);
-        m_motorFollower = new WPI_TalonFX(Constants.kShooterFolowerId);
+        m_motorLeader = new CANTalon(Constants.kShooterMasterId);
+        m_motorFollower = new CANTalon(Constants.kShooterSlaveId);
 
-        m_motorLeader.setFeedbackDevice(WPI_TalonFX.FeedbackDevice.CtreMagEncoder_Relative);
+        m_motorLeader.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
         if (m_motorLeader.isSensorPresent(
                 CANTalon.FeedbackDevice.CtreMagEncoder_Relative) != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
             DriverStation.reportError("Could not detect shooter encoder!", false);
         }
 
-        m_motorLeader.changeControlMode(WPI_TalonFX.TalonControlMode.PercentVbus);
-        m_motorFollower.changeControlMode(WPI_TalonFX.TalonControlMode.Follower);
+        m_motorLeader.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        m_motorFollower.changeControlMode(CANTalon.TalonControlMode.Follower);
         m_motorFollower.set(Constants.kShooterMasterId);
 
         m_motorLeader.setPID(Constants.kFlywheelKp, Constants.kFlywheelKi, Constants.kFlywheelKd, Constants.kFlywheelKf,

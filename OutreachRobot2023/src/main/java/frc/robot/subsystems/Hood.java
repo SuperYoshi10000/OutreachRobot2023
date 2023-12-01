@@ -1,8 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-import com.team254.frc2016.loops.Loop;
-import com.team254.lib.util.MA3Encoder;
+
 
 //this will not be needed becuase we are not stowing the hood
 import edu.wpi.first.wpilibj.Solenoid;
