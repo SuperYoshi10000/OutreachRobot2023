@@ -1,5 +1,11 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+
 /**
  * The flywheel has several parameters: the RPM speed, the setpoint, and the RPM
  * tolerance. When told to, the flywheel will try to spin up to the setpoint
@@ -18,23 +24,19 @@ package frc.robot.subsystems;
  * @see Superstructure
  */
 public class Flywheel extends Subsystem {
-    CANTalon m_motorLeader;
-    CANTalon m_motorFollower;
+    WPI_TalonFX m_motorLeader;
+    WPI_TalonFX m_motorFollower;
+    TalonFXSensorCollection m_encoder;
 
     Flywheel() {
-        m_motorLeader = new CANTalon(Constants.kShooterMasterId);
-        m_motorFollower = new CANTalon(Constants.kShooterSlaveId);
-
-        m_motorLeader.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
-        if (m_motorLeader.isSensorPresent(
-                CANTalon.FeedbackDevice.CtreMagEncoder_Relative) != CANTalon.FeedbackDeviceStatus.FeedbackStatusPresent) {
-            DriverStation.reportError("Could not detect shooter encoder!", false);
-        }
+        m_motorLeader = new WPI_TalonFX(Constants.kShooterLeaderId);
+        m_motorFollower = new WPI_TalonFX(Constants.kShooterFolowerId);
+        m_encoder = m_motorLeader.getSensorCollection();
 
         m_motorLeader.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
         m_motorFollower.changeControlMode(CANTalon.TalonControlMode.Follower);
-        m_motorFollower.set(Constants.kShooterMasterId);
-
+        
+        
         m_motorLeader.setPID(Constants.kFlywheelKp, Constants.kFlywheelKi, Constants.kFlywheelKd, Constants.kFlywheelKf,
                 Constants.kFlywheelIZone, Constants.kFlywheelRampRate, 0);
         m_motorLeader.setProfile(0);
@@ -82,7 +84,7 @@ public class Flywheel extends Subsystem {
      *         point.
      */
     public synchronized boolean isOnTarget() {
-        return (m_motorLeader.getControlMode() == CANTalon.TalonControlMode.Speed
+        return (m_motorLeader.getControlMode() == WPI_TalonFX.TalonControlMode.Speed
                 && Math.abs(getRpm() - getSetpoint()) < Constants.kFlywheelOnTargetTolerance);
     }
 
@@ -96,8 +98,8 @@ public class Flywheel extends Subsystem {
         SmartDashboard.putNumber("flywheel_rpm", getRpm());
         SmartDashboard.putNumber("flywheel_setpoint", m_motorLeader.getSetpoint());
         SmartDashboard.putBoolean("flywheel_on_target", isOnTarget());
-        SmartDashboard.putNumber("flywheel_master_current", m_motorLeader.getOutputCurrent());
-        SmartDashboard.putNumber("flywheel_slave_current", m_motorFollower.getOutputCurrent());
+        SmartDashboard.putNumber("flywheel_master_current", m_motorLeader.getSupplyCurrent());
+        SmartDashboard.putNumber("flywheel_slave_current", m_motorFollower.getSupplyCurrent());
     }
 
     @Override

@@ -54,8 +54,8 @@ public class Turret extends Subsystem {
 
         // We use soft limits to make sure the turret doesn't try to spin too
         // far.
-        m_motorLeader.enableForwardSoftLimit(true);
-        m_motorLeader.enableReverseSoftLimit(true);
+        m_motorLeader.configForwardSoftLimitEnable(true);
+        m_motorLeader.configReverseSoftLimitEnable(true);
         m_motorLeader.setForwardSoftLimit(Constants.kSoftMaxTurretAngle / (360.0 * Constants.kTurretRotationsPerTick));
         m_motorLeader.setReverseSoftLimit(Constants.kSoftMinTurretAngle / (360.0 * Constants.kTurretRotationsPerTick));
     }

@@ -68,6 +68,9 @@ public class Constants {
     public static int kFlywheelIZone = (int) (1023.0 / kFlywheelKp);
     public static double kFlywheelRampRate = 0;
     public static int kFlywheelAllowableError = 0;
+    public static int kShooterLeaderId = 10;//TODO needs to be set
+    public static int kShooterFolowerId = 11;
+    public static int kTurretTalonId = 12; 
 
 
 }

@@ -4,17 +4,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * A container class to specify the shooter angle. It contains the desired
- * range, the turret angle, and the computer vision's track's ID.
+ * range and the turret angle
  */
 public class ShooterAimingParameters {
     double range;
     Rotation2d turret_angle;
-    int track_id;
 
     public ShooterAimingParameters(double range, Rotation2d turret_angle, int track_id) {
         this.range = range;
         this.turret_angle = turret_angle;
-        this.track_id = track_id;
     }
 
     public double getRange() {
@@ -23,9 +21,5 @@ public class ShooterAimingParameters {
 
     public Rotation2d getTurretAngle() {
         return turret_angle;
-    }
-
-    public int getTrackid() {
-        return track_id;
     }
 }
